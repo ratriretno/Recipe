@@ -17,20 +17,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.ratriretno.recipe.data.model.ApiRecipe
+import com.ratriretno.recipe.nav.NavigationUtil.navigateSingleTopTo
 import com.ratriretno.recipe.nav.RecipeDestinationsArgs.RECIPE_ID_ARG
-import com.ratriretno.recipe.nav.RecipeDestinationsArgs.TITLE_ARG
 import com.ratriretno.recipe.ui.DetailScreen
+import com.ratriretno.recipe.ui.FavoriteScreen
 import com.ratriretno.recipe.ui.HomeScreen
 
 @Composable
@@ -54,11 +56,9 @@ fun RecipeNavGraph (
 
         composable(route = RecipeDestinations.DETAIL_ROUTE,
                 arguments = listOf(
-                navArgument(RECIPE_ID_ARG) { type = NavType.IntType }
+                navArgument(RECIPE_ID_ARG) { type = NavType.StringType }
         )){
-                entry ->
-                val id = entry.arguments?.getInt(RECIPE_ID_ARG)!!
-                DetailScreen(id)
+                DetailScreen()
         }
 
     }
@@ -69,8 +69,17 @@ fun RecipeNavGraph (
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Recipe(
-    navActions: RecipeNavigationActions
+    navActions: RecipeNavigationActions,
+    navController: NavHostController = rememberNavController(),
+    navActionsRecipe: RecipeNavigationActions = remember(navController) {
+        RecipeNavigationActions(navController)},
+
 ) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val currentScreen = bottomBarScreens.find { it.route == currentDestination?.route } ?: Route.Home
+
     Scaffold(
             topBar = {
                 TopAppBar(
@@ -84,59 +93,34 @@ fun Recipe(
                 )
             },
             bottomBar = {
-                RecipeBottomNavigation()
+//                RecipeBottomNavigation(navActionsRecipe)
+                BottomNavigation(currentScreen = currentScreen) {
+                    navigateSingleTopTo(it.route, navController)
+                }
             }
         ) {
         it
-            RecipeNavHost(
-                navActions=navActions,
-                modifier = Modifier.padding(it)
-            )
+
+        NavHost(
+            navController = navController,
+            startDestination = RecipeDestinations.HOME_ROUTE,
+            modifier = Modifier.padding(it),
+        ) {
+            composable(route = RecipeDestinations.HOME_ROUTE) {
+                Log.d("route", RecipeDestinations.HOME_ROUTE)
+                HomeScreen(
+                    onListClick = { recipe -> navActions.navigateToDetail(recipe) }
+                )
+            }
+
+            composable(route = RecipeDestinations.FAVORITE_ROUTE) {
+                Log.d("route", RecipeDestinations.FAVORITE_ROUTE)
+                FavoriteScreen(
+                    onListClick = { recipe -> navActions.navigateToDetail(recipe) }
+                )
+            }
         }
 }
-
-@Composable
-private fun RecipeNavHost(
-    navActions: RecipeNavigationActions,
-    modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
-    navActionsRecipe: RecipeNavigationActions = remember(navController) {
-        RecipeNavigationActions(navController)
-    }
-)
-    {
-
-    NavHost(
-        navController = navController,
-        startDestination = RecipeDestinations.HOME_ROUTE,
-        modifier = modifier
-    ) {
-        composable(route = RecipeDestinations.HOME_ROUTE) {
-            Log.d("route", RecipeDestinations.HOME_ROUTE)
-            HomeScreen(
-                onListClick = { list -> navActions.navigateToDetail(list) }
-            )
-        }
-
-//        composable(route = RecipeDestinations.DETAIL_ROUTE,
-//            arguments = listOf(
-//                navArgument(RECIPE_ID_ARG) { type = NavType.IntType },
-//                navArgument(TITLE_ARG) { type = NavType.StringType }
-//            )){
-//                entry ->
-//            val id = entry.arguments?.getInt(RECIPE_ID_ARG)!!
-//            val title = entry.arguments?.getInt(TITLE_ARG)!!
-//            DetailScreen(id)
-//        }
-
-//        composable(RecipeDestinations.DETAIL_ROUTE ){
-//            DetailScreen(
-////                onBack = { navController.popBackStack() }
-////                onDeleteTask = { navActions.navigateToTasks(DELETE_RESULT_OK) }
-//            )
-//        }
-
-    }
 }
 
 // Keys for navigation
@@ -146,8 +130,7 @@ const val EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 3
 
 
 @Composable
-fun RecipeBottomNavigation(
-) {
+fun RecipeBottomNavigation(navActionsRecipe: RecipeNavigationActions) {
     NavigationBar {
 
         NavigationBarItem(
@@ -161,7 +144,7 @@ fun RecipeBottomNavigation(
                     contentDescription = "Localized description",
                 )
             },
-            onClick = {}
+            onClick = {navActionsRecipe.navigateToHome()}
         )
 
         NavigationBarItem(
@@ -175,7 +158,7 @@ fun RecipeBottomNavigation(
                     contentDescription = "Localized description",
                 )
             },
-            onClick = {}
+            onClick = {navActionsRecipe.navigateFavorite()}
         )
 
         NavigationBarItem(
@@ -195,4 +178,26 @@ fun RecipeBottomNavigation(
     }
 }
 
+@Composable
+fun BottomNavigation(
+    currentScreen: Route,
+    onIconSelected: (Route) -> Unit
+) {
+    NavigationBar {
+        bottomBarScreens.forEach { screen ->
+            NavigationBarItem(
+                selected = screen == currentScreen,
+                label = {
+                    Text(text = stringResource(id = screen.resourceId))
+                },
+                icon = {
+                    Icon(screen.icon, null)
+                },
+                onClick = {
+                    onIconSelected.invoke(screen)
+                }
+            )
+        }
+    }
+}
 

@@ -1,18 +1,12 @@
-package com.ratriretno.recipe.di.module
+package com.ratriretno.recipe.di
 
 import android.content.Context
 import android.util.Log
-import com.khush.newsapp.common.dispatcher.DefaultDispatcherProvider
-import com.khush.newsapp.common.dispatcher.DispatcherProvider
-import com.khush.newsapp.common.logger.AppLogger
-import com.khush.newsapp.common.logger.Logger
+import androidx.work.WorkManager
 import com.khush.newsapp.common.networkhelper.NetworkHelper
 import com.khush.newsapp.common.networkhelper.NetworkHelperImpl
 import com.ratriretno.recipe.common.Const
 import com.ratriretno.recipe.data.network.ApiInterface
-import com.ratriretno.recipe.di.ApiKey
-import com.ratriretno.recipe.di.BaseUrl
-import com.ratriretno.recipe.di.DbName
 
 import dagger.Module
 import dagger.Provides
@@ -33,10 +27,10 @@ class ApplicationModule() {
 //    fun provideArticleDatabase(
 //        application: Application,
 //        @DbName dbName: String
-//    ): ArticleDatabase {
+//    ): RecipeDatabase {
 //        return Room.databaseBuilder(
 //            application,
-//            ArticleDatabase::class.java,
+//            RecipeDatabase::class.java,
 //            dbName
 //        )
 //            .build()
@@ -54,9 +48,9 @@ class ApplicationModule() {
     @Provides
     fun provideBaseUrl(): String = Const.BASE_URL
 
-    @DbName
-    @Provides
-    fun provideDbName(): String = Const.DB_NAME
+//    @DbName
+//    @Provides
+//    fun provideDbName(): String = Const.DB_NAME
 
     @Singleton
     @Provides
@@ -81,19 +75,16 @@ class ApplicationModule() {
             .create(ApiInterface::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideLogger(): Logger = AppLogger()
 
-    @Provides
-    @Singleton
-    fun provideDispatcher(): DispatcherProvider = DefaultDispatcherProvider()
+//    @Provides
+//    @Singleton
+//    fun provideDispatcher(): DispatcherProvider = DefaultDispatcherProvider()
 
 //    @Provides
 //    @Singleton
 //    fun providePager(
 //        newsPagingSource: NewsPagingSource
-//    ): Pager<Int, Article> {
+//    ): Pager<Int, LocalRecipe> {
 //        return Pager(
 //            config = PagingConfig(
 //                Const.DEFAULT_QUERY_PAGE_SIZE
@@ -117,12 +108,12 @@ class ApplicationModule() {
 //        return AppDatabaseService(articleDatabase)
 //    }
 //
-//    @Provides
-//    @Singleton
-//    fun provideWorkManager(
-//        @ApplicationContext context: Context
-//    ): WorkManager {
-//        return WorkManager.getInstance(context)
-//    }
+    @Provides
+    @Singleton
+    fun provideWorkManager(
+        @ApplicationContext context: Context
+    ): WorkManager {
+        return WorkManager.getInstance(context)
+    }
 
 }

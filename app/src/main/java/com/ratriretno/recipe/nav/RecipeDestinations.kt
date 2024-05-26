@@ -1,10 +1,16 @@
 package com.ratriretno.recipe.nav
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.ratriretno.recipe.data.model.ApiRecipe
+import com.ratriretno.recipe.R
+import com.ratriretno.recipe.data.local.LocalRecipe
 import com.ratriretno.recipe.nav.RecipeDestinationsArgs.RECIPE_ID_ARG
-import com.ratriretno.recipe.nav.RecipeDestinationsArgs.USER_MESSAGE_ARG
 import com.ratriretno.recipe.nav.RecipeScreens.DETAIL_SCREEN
 import com.ratriretno.recipe.nav.RecipeScreens.FAVORITE_SCREEN
 import com.ratriretno.recipe.nav.RecipeScreens.HOME_SCREEN
@@ -51,6 +57,10 @@ class RecipeNavigationActions(private val navController: NavHostController) {
         navController.navigate(HOME_SCREEN)
     }
 
+    fun navigateFavorite() {
+        navController.navigate(FAVORITE_SCREEN)
+    }
+
 //    fun navigateToStatistics() {
 //        navController.navigate(TodoDestinations.STATISTICS_ROUTE) {
 //            // Pop up to the start destination of the graph to
@@ -67,9 +77,18 @@ class RecipeNavigationActions(private val navController: NavHostController) {
 //        }
 //    }
 
-    fun navigateToDetail(recipe: ApiRecipe) {
-        val recipeArg : String = recipe.toString()
-        navController.navigate("$DETAIL_SCREEN/${recipe}")
+    fun navigateToDetail(recipe: LocalRecipe) {
+        navController.navigate("$DETAIL_SCREEN/${recipe.id}")
+    }
+
+    fun navigateSingleTopTo(
+        route: String,
+        navController: NavHostController
+    ) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id)
+            launchSingleTop = true
+        }
     }
 
 //    fun navigateToAddEditTask(title: Int, taskId: String?) {
@@ -80,3 +99,32 @@ class RecipeNavigationActions(private val navController: NavHostController) {
 //        )
 //    }
 }
+
+sealed class Route(
+    val route: String,
+    @StringRes val resourceId: Int,
+    val icon: ImageVector,
+    val routeWithoutArgs: String = route
+) {
+
+    object Home : Route(RecipeDestinations.HOME_ROUTE, R.string.home, Icons.Filled.Home)
+    object Favorite : Route(RecipeDestinations.FAVORITE_ROUTE, R.string.saved, Icons.Filled.Favorite)
+}
+
+val bottomBarScreens = listOf(
+    Route.Home,
+    Route.Favorite,
+)
+
+object NavigationUtil {
+
+    fun navigateSingleTopTo(
+        route: String,
+        navController: NavHostController
+    ) {
+        navController.navigate(route) {
+            popUpTo(navController.graph.findStartDestination().id)
+            launchSingleTop = true
+        }
+    }
+    }

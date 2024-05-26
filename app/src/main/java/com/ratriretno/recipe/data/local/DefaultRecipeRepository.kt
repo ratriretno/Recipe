@@ -18,20 +18,36 @@ class DefaultRecipeRepository @Inject constructor (
         return localDataSource.observeAll()
     }
 
+    override suspend fun getAll(): List<LocalRecipe> {
+        return localDataSource.getAll()
+    }
+
     override fun getAllFavoriteStream(): Flow<List<LocalRecipe>> {
         return localDataSource.observeAllFavorite()
     }
 
 
     override suspend fun insertList(list: List<LocalRecipe>) {
-        TODO("Not yet implemented")
+        localDataSource.insertList(list)
+    }
+
+    override suspend fun insert(localRecipe: LocalRecipe) {
+            localDataSource.insert(localRecipe)
     }
 
     override suspend fun update(localRecipe: LocalRecipe) {
-        TODO("Not yet implemented")
+        localDataSource.update(localRecipe)
     }
 
-    override fun getRecipe(id: String): LocalRecipe {
-        TODO("Not yet implemented")
+    override fun getRecipe(id: String): Flow <LocalRecipe> {
+        return localDataSource.getById(id)
+    }
+
+    override suspend fun getPagingRecipe(limit: Int, offset: Int): List<LocalRecipe> {
+        return localDataSource.getPagingRecipe(limit, offset)
+    }
+
+    override suspend fun getPagingRecipeFavorite(limit: Int, offset: Int): List<LocalRecipe> {
+        return localDataSource.getPagingRecipeFavorite(limit, offset)
     }
 }

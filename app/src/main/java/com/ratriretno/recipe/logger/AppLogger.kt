@@ -1,4 +1,4 @@
-package com.khush.newsapp.common.logger
+package com.ratriretno.recipe.logger
 
 import android.util.Log
 

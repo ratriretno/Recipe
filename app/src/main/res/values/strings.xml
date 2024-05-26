@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Recipe</string>
+    <string name="back">back</string>
+    <string name="share">share\n</string>
+    <string name="record_list_end_text">record list and text</string>
+    <string name="home">HOME</string>
+    <string name="saved">SAVED</string>
 </resources>
