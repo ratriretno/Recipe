@@ -1,5 +1,7 @@
 package com.ratriretno.recipe.ui
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +53,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
+    navigateBack : () -> Unit,
     viewModel : DetailViewModel = hiltViewModel(),
     scope: CoroutineScope = rememberCoroutineScope()
     ) {
@@ -73,12 +76,12 @@ fun DetailScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Detail")
+                    Text("Detail Recipe")
                 },
 
                 navigationIcon = {
 
-                    IconButton(onClick =  {}
+                    IconButton(onClick =  navigateBack
                     ) {
                         Icon(Icons.Filled.ArrowBack, stringResource(id = R.string.back))
                     }
@@ -203,9 +206,33 @@ private fun MoreTasksMenu(
                 Icon(icon, stringResource(id = R.string.share))
             }
 
-            IconButton(onClick = { }) {
+            val context = LocalContext.current
+            val summary = "${localRecipe.title}  \n${localRecipe.url}"
+
+            IconButton(onClick = { ShareRecipe(context, localRecipe.title, summary, localRecipe.photoUrl) }) {
                 Icon(Icons.Filled.Share, stringResource(id = R.string.share))
             }
 
         }
+}
+
+private fun ShareRecipe(
+    context: Context,
+    subject: String,
+    summary: String,
+    photoURL: String) {
+    // Create an ACTION_SEND implicit intent with order details in the intent extras
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra(Intent.EXTRA_SUBJECT, subject)
+        putExtra(Intent.EXTRA_TEXT, summary)
+        putExtra(Intent.EXTRA_STREAM, photoURL)
+//        type = "image/jpeg"
+    }
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            context.getString(R.string.app_name)
+        )
+    )
 }

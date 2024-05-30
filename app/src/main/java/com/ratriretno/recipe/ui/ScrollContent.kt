@@ -40,7 +40,7 @@ import com.ratriretno.recipe.ui.viewmodel.PaginationState
 fun ScrollContent(
     list: State<List<LocalRecipe>>,
     nestedScrollInterop: NestedScrollConnection,
-    status: Boolean,
+    isLoadingFirstPage: Boolean,
     onListClick: (LocalRecipe) -> Unit,
     viewModel: HomeViewModel,
     lazyColumnListState: LazyListState,
@@ -52,25 +52,20 @@ fun ScrollContent(
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center
     ) {
-        Log.d("status", status.toString())
 
-        Log.d("list size", list.value.size.toString())
-
-        if (status){
-            Log.d("status", status.toString())
+        if (isLoadingFirstPage){
             indeterminateCircularIndicator()
         } else{
             LazyColumn(
                 state = lazyColumnListState,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(10.dp).fillMaxSize(),
             ) {
 
                 items(
                     list.value.size,
                     key = { list.value[it].id },
                 ) {
-                    Log.d("recipe", list.value[it].id.toString())
                     ItemRecipe(list.value[it],
                         modifier = Modifier
                             .clickable {
@@ -85,9 +80,9 @@ fun ScrollContent(
                     }
 
                     PaginationState.LOADING -> {
-                        item {
-                            smallLoading()
-                        }
+//                        item {
+//                            smallLoading()
+//                        }
                     }
 
                     PaginationState.PAGINATING -> {
@@ -118,23 +113,6 @@ fun ScrollContent(
                         }
                     }
                 }
-//            LazyColumn(
-//                Modifier
-//                    .nestedScroll(nestedScrollInterop)
-//                    .fillMaxSize()
-//                    .padding(10.dp)) {
-//                itemsIndexed(list) { index, item ->
-//                    if (item.description!=""){
-//                        ItemRecipe(item,
-//                            modifier = Modifier
-//                                .clickable {
-//                                            viewModel.insertRecipe(item)
-//                                            onListClick(item)}
-//                                .padding(10.dp))
-//                    }
-//                }
-//            }
-//        }
             }
 
         }
@@ -211,7 +189,7 @@ fun indeterminateCircularIndicator() {
 fun smallLoading() {
 //    if (!status) return
 
-    Column(modifier = Modifier,
+    Column(modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally){
         CircularProgressIndicator(
             modifier = Modifier.width(30.dp),

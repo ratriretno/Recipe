@@ -81,6 +81,7 @@ import com.ratriretno.recipe.ui.viewmodel.SearchViewModel
 @Composable
 fun SearchScreen(
     onListClick: (LocalRecipe) -> Unit,
+    navigateBack : ()-> Unit,
     viewModel: SearchViewModel = hiltViewModel()) {
 
     val searchQuery by viewModel.searchQuery.collectAsState()
@@ -113,6 +114,8 @@ fun SearchScreen(
     LaunchedEffect(isSearchActive) {
         if (isSearchActive){
             focusRequester.requestFocus()
+        } else{
+            focusRequester.freeFocus()
         }
     }
 
@@ -132,7 +135,9 @@ fun SearchScreen(
                 viewModel,
                 onSearchClicked = { viewModel.getNewRecipe()},
                 isSearchActive = isSearchActive,
-                focusRequester = focusRequester
+                focusRequester = focusRequester,
+                navigateBack = navigateBack
+
                 )
         }
     ) {
@@ -162,7 +167,8 @@ fun CustomSearchBar(
     onSearchClicked: () -> Unit = {},
     onTextChange: (String) -> Unit = {},
     isSearchActive : Boolean,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
+    navigateBack : () -> Unit
 ) {
     Log.d("CustomSearchBar", isSearchActive.toString() )
 
@@ -174,14 +180,13 @@ fun CustomSearchBar(
             .shadow(elevation = elevation, shape = cornerShape)
             .background(color = backgroundColor, shape = cornerShape)
             .clickable {
-                viewModel.activeSearch()
+                viewModel.activeSearch(true)
                 focusRequester.requestFocus()
                        },
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
-            IconButton(onClick =  {}
-            ) {
+            IconButton(onClick = navigateBack) {
                 Icon(Icons.Filled.ArrowBack, stringResource(id = R.string.back))
             }
 
@@ -207,7 +212,6 @@ fun CustomSearchBar(
                         text = searchQuery,
                         color = Color.Gray.copy(alpha = 0.5f),
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
                     )
                 }
                 innerTextField()
@@ -230,7 +234,8 @@ fun CustomSearchBar(
                     if (searchQuery.isNotEmpty()) {
                         viewModel.emptySearchQuery()
 //                        onTextChange("")
-                        viewModel.activeSearch()
+                        viewModel.activeSearch(true)
+                        viewModel.clearPaging()
                     }
                 },
         ) {
@@ -257,7 +262,7 @@ fun CustomSearchBar(
 }
 
 @Composable
-fun ScrollContent(
+private fun ScrollContent(
     list: State<List<LocalRecipe>>,
     nestedScrollInterop: NestedScrollConnection,
     isLoadingFirstPage: Boolean,
@@ -307,9 +312,9 @@ fun ScrollContent(
                     }
 
                     PaginationState.LOADING -> {
-                        item {
-                            smallLoading()
-                        }
+//                        item {
+//                            smallLoading()
+//                        }
                     }
 
                     PaginationState.PAGINATING -> {

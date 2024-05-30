@@ -30,6 +30,11 @@ class HomeViewModel @Inject constructor(
 
     ) : ViewModel() {
 
+
+    //loading first page
+    private val _isLoadingFirstPage = MutableStateFlow(false)
+    val isLoadingFirstPage : StateFlow<Boolean> = _isLoadingFirstPage
+
     private val _recipesList =
         MutableStateFlow<MutableList<LocalRecipe>>(mutableListOf())
     val recipesList: StateFlow<List<LocalRecipe>>
@@ -44,22 +49,13 @@ class HomeViewModel @Inject constructor(
     var canPaginate by mutableStateOf(false)
 
 
-    private val _status = MutableStateFlow(false)
-    val status : StateFlow<Boolean> = _status
-
-    init {
-
-    }
-
     fun getData(){
         viewModelScope.launch {
             if (repository.getAll().isEmpty()){
                 Log.d("repository.getAll()", repository.getAll().toString() )
-                updateLoading(true)
                 getRecipes()
             } else{
                 Log.d("repository.getAll()", repository.getAll().size.toString() )
-                updateLoading(false)
                 clearPaging()
                 getRecipesPaging()
             }
@@ -67,23 +63,23 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getRecipes (){
-        updateLoading(true)
+       updateLoadingFirstPage(true)
         viewModelScope.launch {
             kotlin.runCatching {
               val recipes = network.getRecipes()
               insertAllRecipe(recipes)
                 getRecipesPaging()
             }.onSuccess {
-                updateLoading(false)
+                updateLoadingFirstPage(false)
             }.onFailure {
-                updateLoading(false)
+                updateLoadingFirstPage(false)
             }
         }
     }
 
 
-    private fun updateLoading (loading : Boolean){
-        _status.update { loading }
+    private fun updateLoadingFirstPage (loading : Boolean){
+        _isLoadingFirstPage.update { loading }
     }
 
     fun insertRecipe (apiRecipe: ApiRecipe){
@@ -130,9 +126,15 @@ class HomeViewModel @Inject constructor(
 
     fun getRecipesPaging() {
         Log.d("page", page.toString())
+        if (page== INITIAL_PAGE){
+            updateLoadingFirstPage(true)
+        } else{
+            updateLoadingFirstPage(false)
+        }
 
         if (page == INITIAL_PAGE || (page != INITIAL_PAGE && canPaginate) && _pagingState.value == PaginationState.REQUEST_INACTIVE) {
-            _pagingState.update { if (page == INITIAL_PAGE) PaginationState.LOADING else PaginationState.PAGINATING }
+            _pagingState.update {
+                if (page == INITIAL_PAGE) PaginationState.LOADING else PaginationState.PAGINATING }
         }
 
         Log.d("page", page.toString())
@@ -143,6 +145,8 @@ class HomeViewModel @Inject constructor(
                 val result = repository.getPagingRecipe(PAGE_SIZE, page * PAGE_SIZE)
 
                 canPaginate = result.size == PAGE_SIZE
+
+                updateLoadingFirstPage(false)
 
                 if (page == INITIAL_PAGE) {
                     if (result.isEmpty()) {

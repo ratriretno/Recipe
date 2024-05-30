@@ -56,7 +56,7 @@ fun FavoriteScreen (
 
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
 
-    val status by viewModel.status.collectAsState()
+    val isLoadingFirstPage by viewModel.isLoadingFirstPage.collectAsState()
 
 
     val lazyColumnListState = rememberLazyListState()
@@ -91,7 +91,7 @@ fun FavoriteScreen (
     ScrollContent(
         recipeList,
         nestedScrollInterop,
-        status,
+        isLoadingFirstPage,
         onListClick,
         viewModel,
         lazyColumnListState,

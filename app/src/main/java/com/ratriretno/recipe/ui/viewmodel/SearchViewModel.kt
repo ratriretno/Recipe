@@ -31,6 +31,8 @@ class SearchViewModel @Inject constructor(
     private  val _isSearchActive = MutableStateFlow(true)
     val isSearchActive : StateFlow<Boolean> = _isSearchActive
 
+    private val emptyList = emptyList<LocalRecipe>()
+
     private val _recipesList =
         MutableStateFlow<MutableList<LocalRecipe>>(mutableListOf())
     val recipesList: StateFlow<List<LocalRecipe>>
@@ -50,7 +52,6 @@ class SearchViewModel @Inject constructor(
     val isLoadingFirstPage : StateFlow<Boolean> = _isLoadingFirstPage
 
     fun getNewRecipe(){
-        _isSearchActive.update { false }
         clearPaging()
         _recipesList.value.clear()
         if (page== INITIAL_PAGE){
@@ -58,6 +59,8 @@ class SearchViewModel @Inject constructor(
         }
         getRecipesPaging()
         updateLoadingFirstPage(false)
+        activeSearch(false)
+
     }
 
     fun getRecipesPaging() {
@@ -107,6 +110,7 @@ class SearchViewModel @Inject constructor(
         page = INITIAL_PAGE
         _pagingState.update { PaginationState.LOADING }
         canPaginate = false
+        _recipesList.value.clear()
     }
 
     companion object {
@@ -122,8 +126,8 @@ class SearchViewModel @Inject constructor(
         _searchQuery.update {emptySearchQuery }
     }
 
-    fun activeSearch (){
-        _isSearchActive.update { true }
+    fun activeSearch (status: Boolean){
+        _isSearchActive.update { status }
     }
 
     fun updateLoadingFirstPage (status : Boolean){

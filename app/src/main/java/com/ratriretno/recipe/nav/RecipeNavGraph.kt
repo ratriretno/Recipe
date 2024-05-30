@@ -48,6 +48,7 @@ fun RecipeNavGraph (
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
+
     ) {
         composable(route = startDestination,
         ) {
@@ -58,11 +59,14 @@ fun RecipeNavGraph (
                 arguments = listOf(
                 navArgument(RECIPE_ID_ARG) { type = NavType.StringType }
         )){
-                DetailScreen()
+                DetailScreen(navigateBack = { navController.popBackStack() })
         }
 
         composable(route = RecipeDestinations.SEARCH_ROUTE){
-            SearchScreen (onListClick = { recipe -> navActions.navigateToDetail(recipe) })
+            SearchScreen (
+                onListClick = { recipe -> navActions.navigateToDetail(recipe) },
+                navigateBack = {navController.popBackStack()}
+                )
         }
 
     }
@@ -126,7 +130,8 @@ fun Recipe(
 
             composable(route = RecipeDestinations.SEARCH_ROUTE) {
                 SearchScreen(
-                    onListClick = { recipe -> navActions.navigateToDetail(recipe) }
+                    onListClick = { recipe -> navActions.navigateToDetail(recipe) },
+                    navigateBack ={ navController.popBackStack() }
                 )
             }
         }

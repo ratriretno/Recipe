@@ -22,20 +22,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class ApplicationModule() {
 
-//    @Singleton
-//    @Provides
-//    fun provideArticleDatabase(
-//        application: Application,
-//        @DbName dbName: String
-//    ): RecipeDatabase {
-//        return Room.databaseBuilder(
-//            application,
-//            RecipeDatabase::class.java,
-//            dbName
-//        )
-//            .build()
-//    }
-
     @Singleton
     @Provides
     fun provideGsonConverterFactory(): GsonConverterFactory = GsonConverterFactory.create()
@@ -48,9 +34,6 @@ class ApplicationModule() {
     @Provides
     fun provideBaseUrl(): String = Const.BASE_URL
 
-//    @DbName
-//    @Provides
-//    fun provideDbName(): String = Const.DB_NAME
 
     @Singleton
     @Provides
@@ -75,25 +58,6 @@ class ApplicationModule() {
             .create(ApiInterface::class.java)
     }
 
-
-//    @Provides
-//    @Singleton
-//    fun provideDispatcher(): DispatcherProvider = DefaultDispatcherProvider()
-
-//    @Provides
-//    @Singleton
-//    fun providePager(
-//        newsPagingSource: NewsPagingSource
-//    ): Pager<Int, LocalRecipe> {
-//        return Pager(
-//            config = PagingConfig(
-//                Const.DEFAULT_QUERY_PAGE_SIZE
-//            )
-//        ) {
-//            newsPagingSource
-//        }
-//    }
-
     @Provides
     @Singleton
     fun provideNetworkHelper(
@@ -102,12 +66,6 @@ class ApplicationModule() {
         return NetworkHelperImpl(context)
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideDatabaseService(articleDatabase: ArticleDatabase): DatabaseService {
-//        return AppDatabaseService(articleDatabase)
-//    }
-//
     @Provides
     @Singleton
     fun provideWorkManager(

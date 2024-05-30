@@ -55,14 +55,11 @@ fun HomeScreen(
 ) {
 
     val nestedScrollInterop = rememberNestedScrollInteropConnection()
-
-   val status by viewModel.status.collectAsState()
-
-
     val lazyColumnListState = rememberLazyListState()
-
     val recipeList = viewModel.recipesList.collectAsStateWithLifecycle()
     val pagingState = viewModel.pagingState.collectAsStateWithLifecycle()
+    val isLoadingFirstPage by viewModel.isLoadingFirstPage.collectAsState()
+
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getData()
@@ -90,7 +87,7 @@ fun HomeScreen(
     ScrollContent(
         recipeList,
         nestedScrollInterop,
-        status,
+        isLoadingFirstPage,
         onListClick,
         viewModel,
         lazyColumnListState,
