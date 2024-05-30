@@ -18,6 +18,7 @@ interface RecipeRepository {
     fun getRecipe (id : String) : Flow <LocalRecipe>
 
     suspend fun getPagingRecipe(limit: Int, offset: Int): List<LocalRecipe>
+   fun getPagingRecipeSearch(limit: Int, offset: Int, query : String): List<LocalRecipe>
     suspend fun getPagingRecipeFavorite(limit: Int, offset: Int): List<LocalRecipe>
 
 }

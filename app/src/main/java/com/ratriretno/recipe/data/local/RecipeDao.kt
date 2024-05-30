@@ -35,6 +35,10 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes ORDER BY title ASC LIMIT :limit OFFSET :offset")
     suspend fun getPagingRecipe(limit: Int, offset: Int): List<LocalRecipe>
+
+    @Query("SELECT * FROM recipes  WHERE title LIKE '%' || :query || '%' ORDER BY title ASC LIMIT :limit OFFSET :offset")
+    fun getPagingRecipeSearch(limit: Int, offset: Int, query : String): List<LocalRecipe>
+
     @Query("SELECT * FROM recipes WHERE isFavorite=true ORDER BY title ASC LIMIT :limit OFFSET :offset")
     suspend fun getPagingRecipeFavorite(limit: Int, offset: Int): List<LocalRecipe>
 

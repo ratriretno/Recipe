@@ -5,4 +5,7 @@
     <string name="record_list_end_text">record list and text</string>
     <string name="home">HOME</string>
     <string name="saved">SAVED</string>
+    <string name="search">SEARCH</string>
+    <string name="navigation_action_back_cd">navigation action back</string>
+    <string name="search_text_field_clear">search text field clear</string>
 </resources>

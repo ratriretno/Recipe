@@ -7,4 +7,5 @@ enum class PaginationState {
     ERROR,
     PAGINATION_EXHAUST,
     EMPTY,
+
 }

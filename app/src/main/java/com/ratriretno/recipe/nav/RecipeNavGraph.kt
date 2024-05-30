@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -34,6 +33,7 @@ import com.ratriretno.recipe.nav.RecipeDestinationsArgs.RECIPE_ID_ARG
 import com.ratriretno.recipe.ui.DetailScreen
 import com.ratriretno.recipe.ui.FavoriteScreen
 import com.ratriretno.recipe.ui.HomeScreen
+import com.ratriretno.recipe.ui.SearchScreen
 
 @Composable
 fun RecipeNavGraph (
@@ -59,6 +59,10 @@ fun RecipeNavGraph (
                 navArgument(RECIPE_ID_ARG) { type = NavType.StringType }
         )){
                 DetailScreen()
+        }
+
+        composable(route = RecipeDestinations.SEARCH_ROUTE){
+            SearchScreen (onListClick = { recipe -> navActions.navigateToDetail(recipe) })
         }
 
     }
@@ -94,7 +98,7 @@ fun Recipe(
             },
             bottomBar = {
 //                RecipeBottomNavigation(navActionsRecipe)
-                BottomNavigation(currentScreen = currentScreen) {
+                BottomNavigation(currentScreen = currentScreen, navActions= navActions) {
                     navigateSingleTopTo(it.route, navController)
                 }
             }
@@ -116,6 +120,12 @@ fun Recipe(
             composable(route = RecipeDestinations.FAVORITE_ROUTE) {
                 Log.d("route", RecipeDestinations.FAVORITE_ROUTE)
                 FavoriteScreen(
+                    onListClick = { recipe -> navActions.navigateToDetail(recipe) }
+                )
+            }
+
+            composable(route = RecipeDestinations.SEARCH_ROUTE) {
+                SearchScreen(
                     onListClick = { recipe -> navActions.navigateToDetail(recipe) }
                 )
             }
@@ -181,23 +191,40 @@ fun RecipeBottomNavigation(navActionsRecipe: RecipeNavigationActions) {
 @Composable
 fun BottomNavigation(
     currentScreen: Route,
+    navActions: RecipeNavigationActions,
     onIconSelected: (Route) -> Unit
 ) {
     NavigationBar {
         bottomBarScreens.forEach { screen ->
-            NavigationBarItem(
-                selected = screen == currentScreen,
-                label = {
-                    Text(text = stringResource(id = screen.resourceId))
-                },
-                icon = {
-                    Icon(screen.icon, null)
-                },
-                onClick = {
-                    onIconSelected.invoke(screen)
+            if (screen.route!=Route.Search.route){
+                NavigationBarItem(
+                    selected = screen == currentScreen,
+                    label = {
+                        Text(text = stringResource(id = screen.resourceId))
+                    },
+                    icon = {
+                        Icon(screen.icon, null)
+                    },
+                    onClick = {
+                        onIconSelected.invoke(screen)
+                    }
+                ) } else{
+                    NavigationBarItem(
+                        selected = screen == currentScreen,
+                        label = {
+                            Text(text = stringResource(id = screen.resourceId))
+                        },
+                        icon = {
+                            Icon(screen.icon, null)
+                        },
+                        onClick = {
+                            navActions.navigateSearch()
+                        }
+                    )
                 }
-            )
+            }
+
         }
-    }
 }
+
 

@@ -33,7 +33,7 @@ data class ApiRecipe (
 //    var source  : String,
 //
 //    @SerializedName("url")
-//    var url : String,
+    var url : String,
 //
 //    @SerializedName("urlHost")
 //    var urlHost : String,

@@ -55,7 +55,7 @@ fun DetailScreen(
     scope: CoroutineScope = rememberCoroutineScope()
     ) {
 
-   val emptyRecipe = LocalRecipe(0, "", "", "", "", "", 0, 0, 0,"", false)
+   val emptyRecipe = LocalRecipe(0, "", "", "", "", "", 0, 0, 0,"", false, url = "")
 
     val recipe by viewModel.getRecipe().collectAsState(initial = emptyRecipe)
 
@@ -182,10 +182,6 @@ fun DetailScreen(
         }
 
     }
-
-
-
-
 }
 
 @Composable

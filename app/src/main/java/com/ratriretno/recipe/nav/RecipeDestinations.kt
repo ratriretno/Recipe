@@ -4,7 +4,9 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -15,6 +17,7 @@ import com.ratriretno.recipe.nav.RecipeScreens.DETAIL_SCREEN
 import com.ratriretno.recipe.nav.RecipeScreens.FAVORITE_SCREEN
 import com.ratriretno.recipe.nav.RecipeScreens.HOME_SCREEN
 import com.ratriretno.recipe.nav.RecipeScreens.RECIPE_SCREEN
+import com.ratriretno.recipe.nav.RecipeScreens.SEARCH_SCREEN
 
 /**
  * Screens used in [TodoDestinations]
@@ -24,6 +27,7 @@ private object RecipeScreens {
     const val HOME_SCREEN = "home"
     const val FAVORITE_SCREEN = "favorite"
     const val DETAIL_SCREEN = "detail"
+    const val SEARCH_SCREEN = "search"
 }
 
 /**
@@ -44,6 +48,7 @@ object RecipeDestinations {
     const val RECIPE_ROUTE = RECIPE_SCREEN
     const val HOME_ROUTE = HOME_SCREEN
     const val FAVORITE_ROUTE = FAVORITE_SCREEN
+    const val SEARCH_ROUTE = SEARCH_SCREEN
     const val DETAIL_ROUTE = "$DETAIL_SCREEN/{$RECIPE_ID_ARG}"
 //    const val ADD_EDIT_TASK_ROUTE = "$ADD_EDIT_TASK_SCREEN/{$TITLE_ARG}?$TASK_ID_ARG={$TASK_ID_ARG}"
 }
@@ -59,6 +64,10 @@ class RecipeNavigationActions(private val navController: NavHostController) {
 
     fun navigateFavorite() {
         navController.navigate(FAVORITE_SCREEN)
+    }
+
+    fun navigateSearch() {
+        navController.navigate(SEARCH_SCREEN)
     }
 
 //    fun navigateToStatistics() {
@@ -108,12 +117,14 @@ sealed class Route(
 ) {
 
     object Home : Route(RecipeDestinations.HOME_ROUTE, R.string.home, Icons.Filled.Home)
-    object Favorite : Route(RecipeDestinations.FAVORITE_ROUTE, R.string.saved, Icons.Filled.Favorite)
+    object Favorite : Route(RecipeDestinations.FAVORITE_ROUTE, R.string.saved, Icons.Filled.FavoriteBorder)
+    object Search : Route(RecipeDestinations.SEARCH_ROUTE, R.string.search, Icons.Filled.Search)
 }
 
 val bottomBarScreens = listOf(
     Route.Home,
     Route.Favorite,
+    Route.Search
 )
 
 object NavigationUtil {

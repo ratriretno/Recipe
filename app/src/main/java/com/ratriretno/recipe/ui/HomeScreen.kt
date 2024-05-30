@@ -65,8 +65,7 @@ fun HomeScreen(
     val pagingState = viewModel.pagingState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.clearPaging()
-        viewModel.getRecipesPaging()
+        viewModel.getData()
     }
 
     val shouldPaginate = remember {

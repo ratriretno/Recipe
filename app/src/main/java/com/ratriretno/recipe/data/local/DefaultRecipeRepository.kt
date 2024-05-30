@@ -1,5 +1,6 @@
 package com.ratriretno.recipe.data.local
 
+import android.util.Log
 import com.ratriretno.recipe.di.ApplicationScope
 import com.ratriretno.recipe.di.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
@@ -45,6 +46,18 @@ class DefaultRecipeRepository @Inject constructor (
 
     override suspend fun getPagingRecipe(limit: Int, offset: Int): List<LocalRecipe> {
         return localDataSource.getPagingRecipe(limit, offset)
+    }
+
+    override fun getPagingRecipeSearch(
+        limit: Int,
+        offset: Int,
+        query: String
+    ): List<LocalRecipe>{
+        Log.d("RecipeSearch  limit",  limit.toString())
+        Log.d("RecipeSearch  offset",  offset.toString())
+        Log.d("RecipeSearch  query",  query)
+        Log.d("RecipeSearch  end ",  "------------------------------")
+        return  localDataSource.getPagingRecipeSearch(limit,offset, query)
     }
 
     override suspend fun getPagingRecipeFavorite(limit: Int, offset: Int): List<LocalRecipe> {

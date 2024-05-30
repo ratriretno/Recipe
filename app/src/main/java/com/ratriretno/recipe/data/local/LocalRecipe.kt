@@ -18,7 +18,7 @@ data class LocalRecipe(
     var cookTime : Int,
     var totalTime : Int,
     var directions : String,
-    var isFavorite : Boolean
+    var isFavorite : Boolean,
 
 //    @SerializedName("course")
 //    val course: String,
@@ -32,7 +32,7 @@ data class LocalRecipe(
 //    var source  : String,
 //
 //    @SerializedName("url")
-//    var url : String,
+    var url : String,
 //
 //    @SerializedName("urlHost")
 //    var urlHost : String,

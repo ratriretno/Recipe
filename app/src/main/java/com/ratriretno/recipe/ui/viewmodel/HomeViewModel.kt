@@ -48,14 +48,20 @@ class HomeViewModel @Inject constructor(
     val status : StateFlow<Boolean> = _status
 
     init {
+
+    }
+
+    fun getData(){
         viewModelScope.launch {
             if (repository.getAll().isEmpty()){
                 Log.d("repository.getAll()", repository.getAll().toString() )
-                updateLoading(false)
+                updateLoading(true)
                 getRecipes()
             } else{
                 Log.d("repository.getAll()", repository.getAll().size.toString() )
                 updateLoading(false)
+                clearPaging()
+                getRecipesPaging()
             }
         }
     }
@@ -66,6 +72,7 @@ class HomeViewModel @Inject constructor(
             kotlin.runCatching {
               val recipes = network.getRecipes()
               insertAllRecipe(recipes)
+                getRecipesPaging()
             }.onSuccess {
                 updateLoading(false)
             }.onFailure {
@@ -116,7 +123,8 @@ class HomeViewModel @Inject constructor(
             cookTime = apiRecipe.cookTime,
             totalTime = apiRecipe.totalTime,
             directions = apiRecipe.directions,
-            isFavorite = false
+            isFavorite = false,
+            url = apiRecipe.url
         )
     }
 
